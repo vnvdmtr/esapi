@@ -153,4 +153,14 @@ The server is configured from scratch using following steps:
     - Export the certificate using browser to crt file by opening the ElasticSearch 
       API URL in your browser (e.g. Chrome) and clicking "Not secure" in address bar,
       then "Certificate is not valid" &rarr; "Details" &rarr; "Export..."
-    - Import the certificate to the Java trust store using 
+    - Import the certificate to the Java trust store using Keytool utility which
+      is included in JDK.
+      E.g.:
+      ```
+      "C:\Program Files\Java\jdk-21\bin\keytool" -import -file "C:\tmp\elasticsearch.crt" -storepass ****** -trustcacerts -cacerts -alias "elasticsearch"
+      
+      # The default storage password is "changeit"
+      # Replace "C:\Program Files\Java\jdk-21" with your JAVA_HOME path.
+      # Replace "C:\tmp\elasticsearch.crt" to path to the certificate that 
+      # you have previously exported using browser.
+      ```
