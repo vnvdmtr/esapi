@@ -1,0 +1,133 @@
+{
+	"info": {
+		"_postman_id": "5ac65de6-f60f-4899-b83b-55f3b699bb87",
+		"name": "ElasticSearch API Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7589384"
+	},
+	"item": [
+		{
+			"name": "1. Create index",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Status code is 200 or 201\"] = responseCode.code === 200  || responseCode.code === 201;\r",
+							"let responseData=pm.response.json();\r",
+							"tests[\"Response contains the name of inserted index\"] = responseData.hasOwnProperty('name');\r",
+							"pm.environment.set(\"indexName\", responseData.name);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"books\",\r\n    \"settings\": {\r\n        \"refresh_interval\" : \"123s\"\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "{{serverUrl}}/indices",
+					"host": [
+						"{{serverUrl}}"
+					],
+					"path": [
+						"indices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Add document",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Status code is 200 or 201\"] = responseCode.code === 200 || responseCode.code === 201\r",
+							"let responseData=pm.response.json()\r",
+							"tests[\"Response contains generated id\"] = responseData.hasOwnProperty('id')\r",
+							"tests[\"Response contains field disributionCities, which is array\"] = Array.isArray(responseData['disributionCities'])\r",
+							"tests[\"Response contains 4 disributionCities\"] = responseData['disributionCities'].length === 4\r",
+							"pm.environment.set(\"documentId\", responseData.id);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"myCustomTitle\": \"My book\",\r\n    \"disributionCities\": [\"London\", \"Lisbon\", \"Berlin\", \"Madrid\"]\r\n}"
+				},
+				"url": {
+					"raw": "{{serverUrl}}/indices/{{indexName}}/documents",
+					"host": [
+						"{{serverUrl}}"
+					],
+					"path": [
+						"indices",
+						"{{indexName}}",
+						"documents"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. Get added document",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200\r",
+							"let responseData=pm.response.json()\r",
+							"tests[\"Response contains field disributionCities, which is array\"] = Array.isArray(responseData['disributionCities'])\r",
+							"tests[\"Response contains 4 disributionCities\"] = responseData['disributionCities'].length === 4\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{serverUrl}}/indices/{{indexName}}/documents/{{documentId}}",
+					"host": [
+						"{{serverUrl}}"
+					],
+					"path": [
+						"indices",
+						"{{indexName}}",
+						"documents",
+						"{{documentId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
